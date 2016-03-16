@@ -1,6 +1,7 @@
 # import the Flask class from the flask module
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, session, flash, g
 from functools import wraps
+import MySQLdb
 
 # create the application object
 app = Flask(__name__)
@@ -19,16 +20,23 @@ def login_required(f):
             return redirect(url_for('login'))
     return wrap
 
+
 # use decorators to link the function to a url
 @app.route('/')
 @login_required
 def home():
-    return render_template('index.html')  # render a template
-    # return "Hello, World!"  # return a string
+    g.db = connect_db()
+    cur = g.db.cursor()
+    cur.execute('select * from posts')
+    posts = [dict(title=row[0], description=row[1]) for row in cur.fetchall()]
+    g.db.close()
+    return render_template('index.html', posts=posts)  # render a template
+
 
 @app.route('/welcome')
 def welcome():
     return render_template('welcome.html')  # render a template
+
 
 # route for handling the login page logic
 @app.route('/login', methods=['GET', 'POST'])
@@ -49,6 +57,13 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out.')
     return redirect(url_for('welcome'))
+
+
+def connect_db():
+    return MySQLdb.connect(host='localhost',
+                           user='admin',
+                           passwd='123456',
+                           db='flask')
 
 
 # start the server with the 'run()' method
