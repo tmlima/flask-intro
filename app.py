@@ -1,13 +1,19 @@
 # import the Flask class from the flask module
 from flask import Flask, render_template, redirect, url_for, request, session, flash, g
+from flask.ext.sqlalchemy import SQLAlchemy
 from functools import wraps
-import MySQLdb
 
 # create the application object
 app = Flask(__name__)
 
 # config
 app.secret_key = 'my precious'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:123456@localhost:3306/flask'
+
+#create the sqlalchemy object
+db = SQLAlchemy(app)
+
+from models import *
 
 # login required decorator
 def login_required(f):
@@ -25,11 +31,9 @@ def login_required(f):
 @app.route('/')
 @login_required
 def home():
-    g.db = connect_db()
-    cur = g.db.cursor()
-    cur.execute('select * from posts')
-    posts = [dict(title=row[0], description=row[1]) for row in cur.fetchall()]
-    g.db.close()
+
+    posts = db.session.query(BlogPost).all()
+
     return render_template('index.html', posts=posts)  # render a template
 
 
@@ -57,14 +61,6 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out.')
     return redirect(url_for('welcome'))
-
-
-def connect_db():
-    return MySQLdb.connect(host='localhost',
-                           user='admin',
-                           passwd='123456',
-                           db='flask')
-
 
 # start the server with the 'run()' method
 if __name__ == '__main__':
