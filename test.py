@@ -27,7 +27,7 @@ class FlaskTestCase(unittest.TestCase):
         self.assertIn('You were logged in', response.data)
 
     # Ensure that the login behaves correctly given the incorrect credentials
-    def test_incorret_login(self):
+    def test_incorrected_login(self):
         tester = app.test_client(self)
         response = tester.post(
             '/login',
