@@ -2,13 +2,14 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, g
 from flask.ext.sqlalchemy import SQLAlchemy
 from functools import wraps
+import os
 
 # create the application object
 app = Flask(__name__)
 
 # config
-app.secret_key = 'my precious'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:123456@localhost:3306/flask'
+# app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object('config.DevelopmentConfig')
 
 #create the sqlalchemy object
 db = SQLAlchemy(app)
