@@ -1,4 +1,4 @@
-from app import db
+from project import db
 from project.users.views import bcrypt
 
 from sqlalchemy import ForeignKey
