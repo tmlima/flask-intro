@@ -1,19 +1,19 @@
 from project import db
 from project.models import BlogPost, User
 
-#create the database and the db tables
-db.create_all()
+def create():
+    db.create_all()
 
-authorA = User('Author A', 'author.a@a.com', 'Teste@123')
-authorB = User('Author B', 'author.a@a.com', 'Teste@123')
-db.session.add(authorA)
-db.session.add(authorB)
+    author_a = User('Author A', 'author.a@a.com', 'Teste@123')
+    author_b = User('Author B', 'author.a@a.com', 'Teste@123')
+    db.session.add(author_a)
+    db.session.add(author_b)
+    db.session.add(User('admin', 'admin@a.com', 'Teste@123'))
 
-db.session.commit()
+    db.session.commit()
 
-db.session.add(BlogPost("Good title", "Good description", authorA.id))
-db.session.add(BlogPost("Well title", "Well description", authorB.id))
-db.session.add(BlogPost("Greate title", "Greate description", authorB.id))
+    db.session.add(BlogPost("Good title", "Good description", author_a.id))
+    db.session.add(BlogPost("Well title", "Well description", author_b.id))
+    db.session.add(BlogPost("Greate title", "Greate description", author_b.id))
 
-#commit the changes
-db.session.commit()
+    db.session.commit()

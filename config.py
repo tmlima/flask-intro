@@ -5,6 +5,13 @@ class BaseConfig(object):
     SQLALCHEMY_DATABASE_URI = 'mysql://admin:123456@localhost:3306/flask'
 
 
+class TestConfig(BaseConfig):
+    DEBUG = True
+    TESTING = True
+    WTF_CSRF_ENABLED = False
+    SQLALCHEMY_DATABASE_URI = 'mysql://admin:123456@localhost:3306/flask_test'
+
+
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
 
