@@ -2,9 +2,11 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash, g
 from flask.ext.sqlalchemy import SQLAlchemy
 from functools import wraps
+from flask.ext.bcrypt import Bcrypt
 
 # create the application object
 app = Flask(__name__)
+bcrypt = Bcrypt(app)
 
 # config
 # app.config.from_object(os.environ['APP_SETTINGS'])
