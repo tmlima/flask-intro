@@ -1,6 +1,7 @@
 import db_create
 from project import app, db
 from flask.ext.testing import TestCase
+from flask.ext.login import current_user
 import unittest
 
 
@@ -25,7 +26,8 @@ class FlaskTestCase(BaseTestCase):
         response = self.client.get('/login', content_type='html/text')
         self.assertEqual(response.status_code, 200)
 
-    # Ensure that the login page loads correctly
+class  UsersViewsTests(BaseTestCase):
+        # Ensure that the login page loads correctly
     def test_login_page_loads(self):
         response = self.client.get('/login', content_type='html/text')
         self.assertTrue('Please login' in response.data)
@@ -33,11 +35,10 @@ class FlaskTestCase(BaseTestCase):
 
     # Ensure that the login behaves correctly given the correct credentials
     def test_correct_login(self):
-        response = self.client.post(
-            '/login',
-            data=dict(username='admin', password='Teste@123'),
-            follow_redirects=True)
-        self.assertIn('You were logged in', response.data)
+        with self.client:
+            response = self.login_with_default_user()
+            self.assertIn('You were logged in', response.data)
+            self.assertTrue(current_user.is_active)
 
     # Ensure that the login behaves correctly given the incorrect credentials
     def test_incorrected_login(self):
@@ -49,14 +50,20 @@ class FlaskTestCase(BaseTestCase):
 
     # Ensure logout behaves correctly
     def test_logout(self):
-        self.client.post(
+        with self.client:
+            self.login_with_default_user()
+            response = self.client.get(
+                '/logout',
+                follow_redirects=True)
+            self.assertIn('You were logged out.', response.data)
+            self.assertFalse(current_user.is_active)
+
+    def login_with_default_user(self):
+        return self.client.post(
             '/login',
-            data=dict(username='admin', password='Teste@123'),
+            data=dict(username='admin', password='Test@123'),
             follow_redirects=True)
-        response = self.client.get(
-            '/logout',
-            follow_redirects=True)
-        self.assertIn('You were logged out.', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()
